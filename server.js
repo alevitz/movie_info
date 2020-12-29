@@ -96,6 +96,44 @@ app.get("/results/:Title", async function (req, res, next) {
   
 });
 
+app.post("/updatevote", async function(req, res, next){
+  const {movie_title, release_year, thumbs_up, thumbs_down} = req.body;
+  console.log(movie_title, release_year, thumbs_up, thumbs_down);
+
+  try{
+    const result = await db.promise().query(
+    `SELECT movie_title, release_year
+    FROM movie
+    WHERE movie_title="${movie_title}"
+    AND release_year="${release_year}"`);
+    
+     titleResult = result[0];
+    if(titleResult.length){
+      await db.promise().query(
+      `UPDATE movie
+      SET ${thumbs_up || thumbs_down} = ${thumbs_up || thumbs_down} + 1
+      WHERE movie_title = "${movie_title}"
+      AND release_year="${release_year}"`  
+      );
+
+  res.send(`movie already in db, updated ${thumbs_up || thumbs_down} up!`);
+
+      } else {
+        await db.promise().query(`INSERT INTO MOVIE (movie_title, release_year) VALUES('${movie_title}', '${+release_year}')`);
+        await db.promise().query(
+        `UPDATE movie
+        SET ${thumbs_up || thumbs_down} = ${thumbs_up || thumbs_down} + 1
+        WHERE movie_title = "${movie_title}"
+        AND release_year="${release_year}"`  
+        );
+        res.send(`movie added to db, updated ${thumbs_up || thumbs_down} up!`);
+      }
+     } catch(err){
+        console.log(err);
+      }
+
+});
+
 // app.post("/", function(req, res){
 //   console.log(req.body);
 //   let one = 'working!!!!';

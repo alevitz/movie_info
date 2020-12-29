@@ -5,15 +5,18 @@
 
 <h2>Movie Details</h2>
   
-<h3>Title: {{ movieData.data.Title }} </h3>
+<h3>Title: <span id='movie_title'>{{ movieData.data.Title }}</span></h3>
 <h3>Director: {{ movieData.data.Director }} </h3>
-<h3>Release Year: {{ movieData.data.Year }} </h3>
+<h3>Release Year: <span id='release_year'>{{ movieData.data.Year }}</span></h3>
 <h3>Description: {{ movieData.data.Plot }} </h3>
 
-<h2 id="thumbsUpButton">Thumbs Up</h2>
+<!-- <input id='movie_title' type="hidden" name="movie_title" value='{{ movieData.data.Title }}'>
+<input id='release_year' type="hidden" name="release_year" value='{{ movieData.data.Year }}'> -->
+
+<button id="thumbsUpButton">Thumbs Up</button>
 <p id="thumbsUpCount">{{ thumbsUp }}</p>
 
-<h2 id="thumbsDownButton">Thumbs Down</h2>
+<button id="thumbsDownButton">Thumbs Down</button>
 <p id="thumbsDownCount">{{ thumbsDown }}</p>
 
 {% endblock %}
