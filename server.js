@@ -12,7 +12,7 @@ const API_KEY = process.env.API_KEY;
 const apiBaseTemplate = "http://www.omdbapi.com/?apikey=" + API_KEY + "&type=movie";
 let movieSearchResults;
 let movieData;
-let data = {message: "hello there!"};
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
@@ -25,6 +25,8 @@ nunjucks.configure("views",{
 
 app.get("/", function (req, res, next) {
   try{
+    // let data = {message: 'nunjucks!!!!'}
+    // return res.render('index.html', { title: data.message, sub: 'Using nunjucks' });
     return res.render('index.html');
   } catch(err) {
     return next(err);
@@ -44,13 +46,15 @@ app.post("/", async function(req, res, next){
    res.redirect("/results");
   } catch(err) {
     return next(err);
+    
   }  
 });
 
 app.get("/results", async function (req, res, next) {
-  // console.log(movieSearchResults);
-  // console.log(random);
-  return res.render('results.html'), { data };
+  console.log(movieSearchResults);
+  // console.log(random);  
+  // let data = {message: "hello there!"};
+  return res.render('results.html', { movies: movieSearchResults });
   // res.send(movieSearchResults);
 
 });

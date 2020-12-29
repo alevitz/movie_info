@@ -1,18 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
 
-<h1>Movie Info Database</h1>
-  
-<h2><a href="/">Home</a></h2>
+{% block content %}
 
 <h1>Counter</h1>
 <h3 id="count">0</h3>
+
+{{ title }}
 
 <form action="/" method="POST">
   <label for="movieTitle">Search Movie Title</label>
@@ -20,10 +14,4 @@
   <button type="submit">Search</button>
 </form>
 
-<p>Movie data provided by <a href="https://www.omdbapi.com/">The Open Movie Database</a></p>
-
-<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>  
-<script src="https://unpkg.com/axios/dist/axios.js"></script>  
-<script src="./app.js"></script>  
-</body>
-</html>
+{% endblock %}
