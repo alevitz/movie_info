@@ -2,6 +2,8 @@
 
 This project allows users to search for a movie, see details about a specific movie, and vote on it.
 
+![](movie_info.gif)
+
 ## Technologies Used
 
 This app is created with the following technologies:
