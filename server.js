@@ -1,21 +1,83 @@
 const express = require("express");
+const nunjucks = require("nunjucks");
 const bodyParser = require("body-parser");
+const db = require("./database");
+const axios = require("axios");
+
+require("dotenv").config();
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true }));
+const API_KEY = process.env.API_KEY;
+const apiBaseTemplate = "http://www.omdbapi.com/?apikey=" + API_KEY + "&type=movie";
+let movieSearchResults;
+let movieData;
+let data = {message: "hello there!"};
+
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static("public"));
 
-app.get("/", function (req, res) {
- 
-  return res.sendFile(__dirname + '/index.html');
+nunjucks.configure("views",{
+  autoescape: true,
+  express: app
 });
 
-app.post("/", function(req, res){
-  console.log(req.body);
-  let one = 'working!!!!';
-  res.send(one);
+app.get("/", function (req, res, next) {
+  try{
+    return res.render('index.html');
+  } catch(err) {
+    return next(err);
+  }
+});
+
+
+app.post("/", async function(req, res, next){
+  try{
+    const query = req.body.movieList;
+  const url = apiBaseTemplate + "&s=" + query;
+
+   const response = await axios.get(url);
+
+   movieSearchResults = response.data.Search;
+
+   res.redirect("/results");
+  } catch(err) {
+    return next(err);
+  }  
+});
+
+app.get("/results", async function (req, res, next) {
+  // console.log(movieSearchResults);
+  // console.log(random);
+  return res.render('results.html'), { data };
+  // res.send(movieSearchResults);
+
+});
+
+// app.post("/", function(req, res){
+//   console.log(req.body);
+//   let one = 'working!!!!';
+//   res.send(one);
+// });
+
+
+/** 404 handler */
+
+app.use(function(req, res, next) {
+  const err = new Error("Not Found");
+  err.status = 404;
+
+  // pass the error to the next piece of middleware
+  return next(err);
+});
+
+/** general error handler */
+
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+
+  return res.render("error.html", { err });
 });
 
 
