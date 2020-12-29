@@ -51,25 +51,47 @@ app.post("/", async function(req, res, next){
 });
 
 app.get("/results", async function (req, res, next) {
-  console.log(movieSearchResults);
+  try{
+    // console.log(movieSearchResults);
   // console.log(random);  
   // let data = {message: "hello there!"};
   return res.render('results.html', { movies: movieSearchResults });
   // res.send(movieSearchResults);
+} catch(err) {
+  return next(err);
 
+} 
 });
 
-app.get("/results/:Title", async function (req, res) {
-  const requestedTitle = req.params.Title;
+app.get("/results/:Title", async function (req, res, next) {
+  try{
+    const requestedTitle = req.params.Title;
   const url = apiBaseTemplate + "&t=" + requestedTitle;
 
   movieData = await axios.get(url);
 
   let titleResult, thumbsUp, thumbsDown;
 
+  const result = await db.promise().query(
+    `SELECT movie_title, release_year, thumbs_up, thumbs_down
+    FROM movie
+    WHERE movie_title="${movieData.data.Title}"
+    AND release_year="${movieData.data.Year}"`);
+    
+     titleResult = result[0];
+    if(titleResult.length){
+      thumbsUp = result[0][0].thumbs_up;
+      thumbsDown = result[0][0].thumbs_down;
+    } else {
+      thumbsUp = 0;
+      thumbsDown = 0;
+    } 
 
-  return res.render('movieDetails.html', { movieData });
+  return res.render('movieDetails.html', { movieData, thumbsUp, thumbsDown });
+} catch(err) {
+  return next(err);
 
+} 
   
 });
 
@@ -84,6 +106,7 @@ app.get("/results/:Title", async function (req, res) {
 
 app.use(function(req, res, next) {
   const err = new Error("Not Found");
+
   err.status = 404;
 
   // pass the error to the next piece of middleware
