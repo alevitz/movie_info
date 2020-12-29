@@ -46,7 +46,7 @@ app.post("/", async function(req, res, next){
    res.redirect("/results");
   } catch(err) {
     return next(err);
-    
+
   }  
 });
 
@@ -57,6 +57,20 @@ app.get("/results", async function (req, res, next) {
   return res.render('results.html', { movies: movieSearchResults });
   // res.send(movieSearchResults);
 
+});
+
+app.get("/results/:Title", async function (req, res) {
+  const requestedTitle = req.params.Title;
+  const url = apiBaseTemplate + "&t=" + requestedTitle;
+
+  movieData = await axios.get(url);
+
+  let titleResult, thumbsUp, thumbsDown;
+
+
+  return res.render('movieDetails.html', { movieData });
+
+  
 });
 
 // app.post("/", function(req, res){
