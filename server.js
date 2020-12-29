@@ -89,8 +89,9 @@ app.get("/results/:Title", async function (req, res, next) {
 
   return res.render('movieDetails.html', { movieData, thumbsUp, thumbsDown });
 } catch(err) {
-  return next(err);
 
+
+  return next(err);
 } 
   
 });
@@ -106,7 +107,6 @@ app.get("/results/:Title", async function (req, res, next) {
 
 app.use(function(req, res, next) {
   const err = new Error("Not Found");
-
   err.status = 404;
 
   // pass the error to the next piece of middleware
@@ -117,10 +117,8 @@ app.use(function(req, res, next) {
 
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
-
   return res.render("error.html", { err });
 });
-
 
 app.listen(3000, function () {
   console.log("Server started on port 3000");
