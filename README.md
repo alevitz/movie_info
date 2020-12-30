@@ -39,7 +39,7 @@ From the project root directory in the terminal, input the following commands:
 
 3. `npm install` to install the necessary dependencies.
 
-4. `mysql -u root -p YearOne < data.sql` to set up the database. Update username if necessary if it's not 'root'.
+4. `mysql -u root -p YearOne < data.sql` to set up the database. Update username if necessary if it's not 'root', also in database.js.
 
 5. Create a .env file to contain your API key and mySQL password.
 
