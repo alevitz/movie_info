@@ -121,17 +121,12 @@ app.post("/updatevote", async function (req, res, next) {
   }
 });
 
-/** 404 handler */
-
 app.use(function (req, res, next) {
   const err = new Error("Not Found");
   err.status = 404;
 
-  // pass the error to the next piece of middleware
   return next(err);
 });
-
-/** general error handler */
 
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
@@ -141,3 +136,4 @@ app.use((err, req, res, next) => {
 app.listen(3000, function () {
   console.log("Server started on port 3000");
 });
+
