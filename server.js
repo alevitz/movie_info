@@ -9,12 +9,12 @@ require("dotenv").config();
 const app = express();
 
 const API_KEY = process.env.API_KEY;
-const apiBaseTemplate = "http://www.omdbapi.com/?apikey=" + API_KEY + "&type=movie";
+const apiBaseTemplate = "https://api.themoviedb.org/3/search/movie?language=en-US&include_adult=false&api_key=" + API_KEY;
 let movieSearchResults;
 let movieData;
 
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
@@ -35,11 +35,11 @@ app.get("/", function (req, res, next) {
 app.post("/", async function (req, res, next) {
   try {
     const query = req.body.movieList;
-    const url = apiBaseTemplate + "&s=" + query;
+    const url = apiBaseTemplate + "&query=" + query;
 
     const response = await axios.get(url);
 
-    movieSearchResults = response.data.Search;
+    movieSearchResults = response.data.results;
 
     res.redirect("/results");
   } catch (err) {
@@ -61,6 +61,8 @@ app.get("/results/:Title", async function (req, res, next) {
     const url = apiBaseTemplate + "&t=" + requestedTitle;
 
     movieData = await axios.get(url);
+
+    console.log(movieData.data);
 
     let titleResult, thumbsUp, thumbsDown;
 
