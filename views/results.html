@@ -6,7 +6,12 @@
 <h2>Search Results</h2>
 {% for movie in movies %}
 <a href="/results/{{ movie.title }}"><h2>{{ movie.title }}</h2></a>
-<img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" alt="">
+{% if movie.poster_path !== null %}  
+  <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" alt="">
+{% else %}
+<img src="https://www.joblo.com/assets/images/joblo/database-specific-img-225x333.jpg" alt="">
+{% endif %}
+
 {% endfor %}
 
 {% endblock %}
