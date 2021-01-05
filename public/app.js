@@ -20,7 +20,7 @@ thumbsUpButton.click( async function() {
   let thumbs_up = "thumbs_up";
 
   let response = await axios.post("/updatevote", {thumbs_up, movie_title, release_date});
-  console.log(response);
+  
 });
 
 thumbsDownButton.click( async function() {

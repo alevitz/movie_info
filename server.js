@@ -9,7 +9,6 @@ require("dotenv").config();
 const app = express();
 
 const API_KEY = process.env.API_KEY;
-// const apiBaseTemplate = "https://api.themoviedb.org/3/search/movie?language=en-US&include_adult=false&api_key=" + API_KEY;
 const apiBaseTemplate = "https://api.themoviedb.org/3/";
 let movieSearchResults;
 let movieData;
@@ -31,7 +30,6 @@ app.get("/", function (req, res, next) {
     return next(err);
   }
 });
-
 
 
 app.post("/", async function (req, res, next) {
@@ -68,19 +66,13 @@ app.get("/results/:Id", async function (req, res, next) {
     movieData = await axios.get(url);
     director = await axios.get(directorURL);
 
-    // console.log("DIRECTOR!!!!!!!!", director.data.crew);
-
-    // director_name = director.crew.filter((name)=> name.job === 'Director');
-
-
     for(let i = 0; i < director.data.crew.length; i++){
       if(director.data.crew[i].job === "Director"){
         director_name = director.data.crew[i].name;
       }
     }
     director_name = director_name || "Unknown";
-    // console.log("movieData!!!!!!!!!", movieData.data);
-
+    
     let titleResult, thumbsUp, thumbsDown;
 
     const result = await db.promise().query(
@@ -89,7 +81,7 @@ app.get("/results/:Id", async function (req, res, next) {
     WHERE movie_title="${movieData.data.title}"
     AND release_date="${movieData.data.release_date}"`);
 
-    
+
     titleResult = result[0];
     if (titleResult.length) {
       thumbsUp = result[0][0].thumbs_up;
