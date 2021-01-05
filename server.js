@@ -9,10 +9,11 @@ require("dotenv").config();
 const app = express();
 
 const API_KEY = process.env.API_KEY;
-const apiBaseTemplate = "https://api.themoviedb.org/3/search/movie?language=en-US&include_adult=false&api_key=" + API_KEY;
+// const apiBaseTemplate = "https://api.themoviedb.org/3/search/movie?language=en-US&include_adult=false&api_key=" + API_KEY;
+const apiBaseTemplate = "https://api.themoviedb.org/3/";
 let movieSearchResults;
 let movieData;
-
+let director;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -36,7 +37,7 @@ app.get("/", function (req, res, next) {
 app.post("/", async function (req, res, next) {
   try {
     const query = req.body.movieList;
-    const url = apiBaseTemplate + "&query=" + query;
+    const url = apiBaseTemplate + "search/movie?language=en-US&include_adult=false&api_key=" + API_KEY + "&query=" + query;
 
     const response = await axios.get(url);
 
@@ -56,23 +57,39 @@ app.get("/results", async function (req, res, next) {
   }
 });
 
-app.get("/results/:Title", async function (req, res, next) {
+
+app.get("/results/:Id", async function (req, res, next) {
   try {
-    const requestedTitle = req.params.Title;
-    const url = apiBaseTemplate + "&t=" + requestedTitle;
+    const requestedTitleId = req.params.Id;
+    const url = apiBaseTemplate + "movie/" + requestedTitleId + "?language=en-US&api_key=" + API_KEY;
+    const directorURL = apiBaseTemplate + "movie/" + requestedTitleId + "/credits?language=en-US&api_key=" + API_KEY;
+    let director_name;
 
     movieData = await axios.get(url);
+    director = await axios.get(directorURL);
 
-    console.log(movieData.data);
+    // console.log("DIRECTOR!!!!!!!!", director.data.crew);
+
+    // director_name = director.crew.filter((name)=> name.job === 'Director');
+
+
+    for(let i = 0; i < director.data.crew.length; i++){
+      if(director.data.crew[i].job === "Director"){
+        director_name = director.data.crew[i].name;
+      }
+    }
+    director_name = director_name || "Unknown";
+    // console.log("movieData!!!!!!!!!", movieData.data);
 
     let titleResult, thumbsUp, thumbsDown;
 
     const result = await db.promise().query(
-    `SELECT movie_title, release_year, thumbs_up, thumbs_down
+    `SELECT movie_title, release_date, thumbs_up, thumbs_down
     FROM movie
-    WHERE movie_title="${movieData.data.Title}"
-    AND release_year="${movieData.data.Year}"`);
+    WHERE movie_title="${movieData.data.title}"
+    AND release_date="${movieData.data.release_date}"`);
 
+    
     titleResult = result[0];
     if (titleResult.length) {
       thumbsUp = result[0][0].thumbs_up;
@@ -82,21 +99,21 @@ app.get("/results/:Title", async function (req, res, next) {
       thumbsDown = 0;
     }
 
-    return res.render('movieDetails.html', { movieData, thumbsUp, thumbsDown });
+    return res.render('movieDetails.html', { movieData, thumbsUp, thumbsDown, director_name });
   } catch (err) {
     return next(err);
   }
 });
 
 app.post("/updatevote", async function (req, res, next) {
-  const { movie_title, release_year, thumbs_up, thumbs_down } = req.body;
+  const { movie_title, release_date, thumbs_up, thumbs_down } = req.body;
   
   try {
     const result = await db.promise().query(
-    `SELECT movie_title, release_year
+    `SELECT movie_title, release_date
     FROM movie
     WHERE movie_title="${movie_title}"
-    AND release_year="${release_year}"`);
+    AND release_date="${release_date}"`);
 
     titleResult = result[0];
     if (titleResult.length) {
@@ -104,18 +121,18 @@ app.post("/updatevote", async function (req, res, next) {
      `UPDATE movie
       SET ${thumbs_up || thumbs_down} = ${thumbs_up || thumbs_down} + 1
       WHERE movie_title = "${movie_title}"
-      AND release_year="${release_year}"`
+      AND release_date="${release_date}"`
       );
 
       res.send(`movie already in db, updated ${thumbs_up || thumbs_down} up!`);
 
     } else {
-      await db.promise().query(`INSERT INTO MOVIE (movie_title, release_year) VALUES('${movie_title}', '${+release_year}')`);
+      await db.promise().query(`INSERT INTO MOVIE (movie_title, release_date) VALUES('${movie_title}', '${release_date}')`);
       await db.promise().query(
         `UPDATE movie
         SET ${thumbs_up || thumbs_down} = ${thumbs_up || thumbs_down} + 1
         WHERE movie_title = "${movie_title}"
-        AND release_year="${release_year}"`
+        AND release_date="${release_date}"`
       );
       res.send(`movie added to db, updated ${thumbs_up || thumbs_down} up!`);
     }

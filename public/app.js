@@ -3,11 +3,11 @@ let thumbsDownButton = $('#thumbsDownButton');
 let thumbsUpCount = $('#thumbsUpCount');
 let thumbsDownCount = $('#thumbsDownCount');
 let movie_title;
-let release_year;
+let release_date;
 
 if(thumbsUpButton[0]){  
   movie_title = $('#movie_title')[0].innerHTML;
-  release_year = $('#release_year')[0].innerHTML;
+  release_date = $('#release_date')[0].innerHTML;
 };
 
 thumbsUpButton.click( async function() {
@@ -19,7 +19,7 @@ thumbsUpButton.click( async function() {
 
   let thumbs_up = "thumbs_up";
 
-  let response = await axios.post("/updatevote", {thumbs_up, movie_title, release_year});
+  let response = await axios.post("/updatevote", {thumbs_up, movie_title, release_date});
   console.log(response);
 });
 
@@ -32,6 +32,6 @@ thumbsDownButton.click( async function() {
   
   let thumbs_down = "thumbs_down";
 
-  let response = await axios.post("/updatevote", {thumbs_down, movie_title, release_year});
+  let response = await axios.post("/updatevote", {thumbs_down, movie_title, release_date});
   
 });

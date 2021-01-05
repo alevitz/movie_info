@@ -4,11 +4,18 @@
 {% block content %}
 
 <h2>Movie Details</h2>
-  
-<h3>Title: <span id='movie_title'>{{ movieData.data.Title }}</span></h3>
-<h3>Director: {{ movieData.data.Director }} </h3>
-<h3>Release Year: <span id='release_year'>{{ movieData.data.Year }}</span></h3>
-<h3>Description: {{ movieData.data.Plot }} </h3>
+
+
+{% if movieData.data.poster_path !== null %}  
+<img src="https://image.tmdb.org/t/p/w500/{{ movieData.data.poster_path }}" alt="">
+{% else %}
+<img src="https://www.joblo.com/assets/images/joblo/database-specific-img-225x333.jpg" alt="">
+{% endif %}
+
+<h3>Title: <span id='movie_title'>{{ movieData.data.title }}</span></h3>
+<h3>Director: {{ director_name }} </h3>
+<h3>Release Date: <span id='release_date'>{{ movieData.data.release_date }}</span></h3>
+<h3>Description: {{ movieData.data.overview }} </h3>
 
 <button id="thumbsUpButton">Thumbs Up</button>
 <p id="thumbsUpCount">{{ thumbsUp }}</p>
